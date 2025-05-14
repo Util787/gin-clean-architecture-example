@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"todolist/internal/repository"
 
 	"github.com/joho/godotenv"
 )
@@ -18,6 +19,17 @@ func InitConfig() *Config {
 	}
 
 	return &Config{
-		Port: os.Getenv("PORT"),
+		Port: os.Getenv("SERVERPORT"),
+	}
+}
+
+func InitDbConfig() *repository.DBConfig {
+	return &repository.DBConfig{
+		Host:     os.Getenv("DBHOST"),
+		Port:     os.Getenv("DBPORT"),
+		Username: os.Getenv("DBUSERNAME"),
+		Password: os.Getenv("DBPASSWORD"),
+		DBName:   os.Getenv("DBNAME"),
+		SSLMode:  os.Getenv("SSLMODE"),
 	}
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	todoapp "todolist"
 	"todolist/config"
 	"todolist/internal/handler"
@@ -9,20 +9,29 @@ import (
 	"todolist/internal/service"
 
 	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	config := config.InitConfig()
-	log.Println("Config: ", config)
+	logrus.SetFormatter(&logrus.JSONFormatter{})
 
-	repos := repository.NewRepository()
+	servConfig := config.InitConfig()
+	fmt.Println("Config: ", servConfig)
+
+	dbConfig := config.InitDbConfig()
+	db, err := repository.NewPostgresDB(*dbConfig)
+	if err != nil {
+		logrus.Fatal("Failed to connect to database: ", err)
+	}
+
+	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
 
 	srv := new(todoapp.Server)
-	err := srv.Run(config.Port, handlers.InitRoutes())
+	err = srv.Run(servConfig.Port, handlers.InitRoutes())
 	if err != nil {
-		log.Fatal("Failed to start the server: ", err)
+		logrus.Fatal("Failed to start the server: ", err)
 	}
 }
 
