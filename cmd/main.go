@@ -7,6 +7,8 @@ import (
 	"todolist/internal/handler"
 	"todolist/internal/repository"
 	"todolist/internal/service"
+
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -23,3 +25,5 @@ func main() {
 		log.Fatal("Failed to start the server: ", err)
 	}
 }
+
+// migrate -path ./schema -database "postgres://postgres:"qwerty"@localhost:5436/postgres?sslmode=disable" up
